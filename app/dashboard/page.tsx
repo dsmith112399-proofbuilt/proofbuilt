@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import StatusBadge from "@/components/status-badge";
+import DashboardReviewLink from "@/components/dashboard-review-link";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -29,18 +30,56 @@ export default async function DashboardPage() {
     );
   }
 
-  const draftCount = jobs?.filter((j: any) => j.status === "draft").length || 0;
+  const jobsWithReviewLinks = await Promise.all(
+    (jobs || []).map(async (job: any) => {
+      const { data: submissions } = await supabase
+        .from("submissions")
+        .select("id, submitted_at")
+        .eq("job_id", job.id)
+        .order("submitted_at", { ascending: false })
+        .limit(10);
+
+      let activeToken: string | null = null;
+
+      if (submissions?.length) {
+        for (const submission of submissions) {
+          const { data: reviewToken } = await supabase
+            .from("review_tokens")
+            .select("token, is_active")
+            .eq("submission_id", submission.id)
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (reviewToken?.token) {
+            activeToken = reviewToken.token;
+            break;
+          }
+        }
+      }
+
+      return {
+        ...job,
+        reviewLink: activeToken
+          ? `${process.env.NEXT_PUBLIC_SITE_URL || "https://proofbuilt.io"}/review/${activeToken}`
+          : null,
+      };
+    })
+  );
+
+  const draftCount =
+    jobsWithReviewLinks.filter((j: any) => j.status === "draft").length || 0;
   const pendingCount =
-    jobs?.filter((j: any) => j.status === "pending").length || 0;
+    jobsWithReviewLinks.filter((j: any) => j.status === "pending").length || 0;
   const approvedCount =
-    jobs?.filter((j: any) => j.status === "approved").length || 0;
+    jobsWithReviewLinks.filter((j: any) => j.status === "approved").length || 0;
   const rejectedCount =
-    jobs?.filter((j: any) => j.status === "rejected").length || 0;
+    jobsWithReviewLinks.filter((j: any) => j.status === "rejected").length || 0;
 
   return (
     <main className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        {/* Header */}
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -51,7 +90,6 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          {/* Buttons */}
           <div className="flex flex-wrap gap-3">
             <Link
               href="/jobs/new"
@@ -71,7 +109,6 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl border bg-white p-5 shadow-sm">
             <div className="text-sm text-slate-500">Draft</div>
@@ -102,14 +139,13 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Jobs list */}
-        {!jobs?.length ? (
+        {!jobsWithReviewLinks.length ? (
           <div className="rounded-2xl border border-dashed bg-white p-10 text-center text-slate-600 shadow-sm">
             No jobs yet. Create your first one.
           </div>
         ) : (
           <div className="grid gap-4">
-            {jobs.map((job: any) => (
+            {jobsWithReviewLinks.map((job: any) => (
               <Link
                 key={job.id}
                 href={`/jobs/${job.id}`}
@@ -130,7 +166,10 @@ export default async function DashboardPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    {job.reviewLink && (
+                      <DashboardReviewLink reviewLink={job.reviewLink} />
+                    )}
                     <StatusBadge status={job.status} />
                   </div>
                 </div>
