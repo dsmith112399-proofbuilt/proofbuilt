@@ -56,12 +56,29 @@ export default async function ApprovePage({ params }: PageProps) {
     .eq("id", reviewToken.id);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-20">
-      <div className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center shadow-sm">
-        <h1 className="text-2xl font-bold text-green-800">SignOff Approved</h1>
-        <p className="mt-3 text-sm text-green-700">
-          Thank you. The completed work has been approved successfully.
-        </p>
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-xl px-4 py-16">
+        <div className="rounded-3xl border bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
+            <span className="text-2xl text-emerald-700">✓</span>
+          </div>
+
+          <h1 className="mt-5 text-3xl font-bold tracking-tight text-black">
+            SignOff Approved
+          </h1>
+
+          <p className="mt-3 text-sm text-black">
+            Thank you. The completed work has been approved successfully.
+          </p>
+
+          <div className="mt-8 rounded-2xl border bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            This review link has now been completed and closed.
+          </div>
+
+          <div className="mt-8 border-t pt-4 text-center text-xs text-gray-500">
+            Powered by ProofBuilt
+          </div>
+        </div>
       </div>
     </main>
   );

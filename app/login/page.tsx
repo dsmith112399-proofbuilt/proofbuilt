@@ -35,57 +35,69 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-4">
-      <div className="w-full rounded-2xl border p-6 shadow-sm">
-        <h1 className="text-2xl font-bold">ProofBuilt Login</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Sign in to manage jobs and send SignOff links.
-        </p>
-
-        <form onSubmit={handleLogin} className="mt-6 space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Email</label>
-            <input
-              className="w-full rounded-lg border px-3 py-2"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto flex min-h-screen max-w-md items-center px-4 py-10">
+        <div className="w-full rounded-3xl border bg-white p-8 shadow-sm">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold tracking-tight text-black">
+              ProofBuilt Login
+            </h1>
+            <p className="mt-2 text-sm text-black">
+              Sign in to manage jobs, upload proof, and send SignOff links.
+            </p>
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">Password</label>
-            <input
-              className="w-full rounded-lg border px-3 py-2"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-              {error}
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-black">
+                Email
+              </label>
+              <input
+                className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                required
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+            <div>
+              <label className="mb-1 block text-sm font-medium text-black">
+                Password
+              </label>
+              <input
+                className="w-full rounded-xl border bg-white px-3 py-2 text-sm text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-2xl bg-black px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-90 disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <a
+            href="/signup"
+            className="mt-5 block text-center text-sm font-medium text-black underline"
           >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <a
-          href="/signup"
-          className="mt-4 block text-center text-sm text-blue-600 underline"
-        >
-          Need an account? Sign up
-        </a>
+            Need an account? Sign up
+          </a>
+        </div>
       </div>
     </main>
   );
